@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Ali</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #0d1117; /* Fondo oscuro */
+            color: #e6edf3;
+            font-family: 'Courier New', Courier, monospace; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            user-select: none;
+        }
+
+        #instruction {
+            font-size: 2rem;
+            pointer-events: none;
+            z-index: 10;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+            transition: opacity 1s ease-out;
+            max-width: 80%;
+        }
+
+        #congrats-message {
+            position: absolute;
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ff9ee6; 
+            text-align: center;
+            pointer-events: none;
+            z-index: 20;
+            opacity: 0; 
+            transform: scale(0.8);
+            transition: opacity 2s ease-in-out, transform 2s ease-in-out;
+            text-shadow: 0 0 20px rgba(255, 158, 230, 0.6), 0 0 30px rgba(255, 255, 255, 0.4);
+            max-width: 80%;
+        }
+
+        /* Estilo para las imágenes de las flores */
+        .flower {
+            position: absolute;
+            width: 180px; /* Puedes cambiar este número si quieres las flores más grandes o chicas */
+            height: auto;
+            transform: translate(-50%, -50%) scale(0);
+            animation: bloom 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            pointer-events: none;
+            z-index: 5;
+            /* Añade una sombra suave para que resalten */
+            filter: drop-shadow(0px 5px 15px rgba(0,0,0,0.5));
+        }
+
+        @keyframes bloom {
+            0% { transform: translate(-50%, -50%) scale(0) rotate(-15deg); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div id="instruction">haz click en donde sea para ver flores que me recuerdan a ti, ali</div>
+    
+    <div id="congrats-message">Felicidadeees, un paso mas cerca a ser esa ingeniera, doctora, bombera, abogada, detective, psicóloga y mas.</div>
+
+    <script>
+        // Aquí están los nombres exactos de las imágenes que vas a subir
+        const flowerImages = [
+            'flor1.png', 
+            'flor2.png', 
+            'flor3.png', 
+            'flor4.png', 
+            'flor5.png',
+            'flor6.png',
+            'flor7.png'
+        ];
+
+        let flowerCount = 0;
+        let specialEventTriggered = false;
+
+        document.addEventListener('click', (e) => {
+            // Crea un elemento de imagen (img) en lugar de texto
+            const flowerElement = document.createElement('img');
+            flowerElement.classList.add('flower');
+
+            // Elige una imagen al azar de la lista
+            const randomImage = flowerImages[Math.floor(Math.random() * flowerImages.length)];
+            flowerElement.src = randomImage;
+
+            // La posiciona donde hiciste click
+            flowerElement.style.left = `${e.clientX}px`;
+            flowerElement.style.top = `${e.clientY}px`;
+
+            // Añade un ángulo de rotación aleatorio para que se vean más naturales
+            const randomRotation = Math.floor(Math.random() * 40) - 20; 
+            flowerElement.style.transform = `translate(-50%, -50%) scale(1) rotate(${randomRotation}deg)`;
+
+            document.body.appendChild(flowerElement);
+
+            flowerCount++;
+
+            if (flowerCount === 5 && !specialEventTriggered) {
+                specialEventTriggered = true; 
+                triggerSpecialEvent();
+            }
+        });
+
+        function triggerSpecialEvent() {
+            document.getElementById('instruction').style.opacity = '0';
+
+            const message = document.getElementById('congrats-message');
+            message.style.opacity = '1';
+            message.style.transform = 'scale(1)';
+
+            const duration = 5 * 1000;
+            const animationEnd = Date.now() + duration;
+            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+            function randomInRange(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            const interval = setInterval(function() {
+                const timeLeft = animationEnd - Date.now();
+
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+
+                const particleCount = 50 * (timeLeft / duration);
+                
+                confetti(Object.assign({}, defaults, { 
+                    particleCount, 
+                    origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } 
+                }));
+                confetti(Object.assign({}, defaults, { 
+                    particleCount, 
+                    origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } 
+                }));
+            }, 250);
+        }
+    </script>
+</body>
+</html>
